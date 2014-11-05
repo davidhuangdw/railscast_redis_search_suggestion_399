@@ -31,6 +31,7 @@ gem 'bootstrap-sass'
 gem 'bootstrap-generators'
 gem 'jquery-ui-rails'
 gem 'rack-mini-profiler'
+gem 'redis'
 
 # Use ActiveModel has_secure_password
 # gem 'bcrypt', '~> 3.1.7'
