@@ -1,28 +1,54 @@
-== README
+### jquery-ui
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+        gem 'jquery-ui-rails'
 
-Things you may want to cover:
+        //= require jquery-ui               # js
+        *= require jquery-ui                # css
 
-* Ruby version
+        # jquery-ui-autocompletion
+        $ ->
+          $('#search').autocomplete
+            source: "/search_suggestions"       # path for json
 
-* System dependencies
+### redis
 
-* Configuration
+        # namespace & key
+        redis-cli
+        incr 'my_app:other_namespaces:my_key'
+        lpush 'try:my_arr' "something"
+        lrange "try:my_arr" 0 -1
+        zadd "try:my_sorted_set" 100 "two"
 
-* Database creation
+        gem 'redis'
+        $redis = Redis.new
+        $redis....
 
-* Database initialization
+        npm install -g redis-commander
+        redis-commander
+        http://localhost:8081
 
-* How to run the test suite
+        brew install redis lunchy
+        lunchy install /usr/local/Cellar/redis/2.2.2/io.redis.redis-server.plist
+        lunchy start -w redis
+        lunchy ls
 
-* Services (job queues, cache servers, search engines, etc.)
+### bypass rack
 
-* Deployment instructions
+        # app/middleware/search_suggestions.rb
+        class SearchSuggestions
+          def initialize(app)
+            @app = app
+          end
+          def call(env)
+            if env['PATH_INFO'] == '/search_suggestions'
+              request = Rack::Request.new(env)
+              terms = SearchSuggestion.term_for(request.params["term"])
+              [200, {"Content-Type"=>"application/json"}, [terms.to_json]]
+            else
+              @app.call(env)
+            end
+          end
+        end
 
-* ...
-
-
-Please feel free to use a different markup language if you do not plan to run
-<tt>rake doc:app</tt>.
+        # config/application.rb
+        config.middleware.insert_before 0, "SearchSuggestions"
